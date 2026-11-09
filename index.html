@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BIST AutoBot</title>
+<style>
+body{background:#0b1220;color:white;font-family:Arial;padding:18px}
+.card{background:#192436;padding:18px;border-radius:14px;margin:12px 0}
+button{background:#16a34a;color:white;border:0;padding:15px;border-radius:10px;font-size:16px;width:100%;margin-top:10px}
+.stop{background:#dc2626}
+small{color:#aab6c8}
+</style>
+</head>
+<body>
+<h2>📈 BIST AutoBot</h2>
+<small>v0.3 | SANAL İŞLEM MODU</small>
+<div class="card">
+<small>Portföy Değeri</small>
+<h1 id="balance">20.000 TL</h1>
+<small id="status">Bot durduruldu</small>
+</div>
+<div class="card">
+<h3>Otomatik Tarama</h3>
+<p id="signal">Henüz sinyal yok</p>
+<button onclick="start()">Botu Başlat</button>
+<button onclick="scan()">Bir Tarama Yap</button>
+<button class="stop" onclick="stop()">Botu Durdur</button>
+</div>
+<div class="card">
+<h3>İşlem Günlüğü</h3>
+<div id="log">Henüz işlem yapılmadı.</div>
+</div>
+<script>
+let active=false;
+let cash=20000;
+let shares=0;
+let entry=0;
+let price=138.40;
+function show(){
+ document.getElementById("balance").textContent=
+ (cash+shares*price).toLocaleString("tr-TR",
+ {minimumFractionDigits:2})+" TL";
+}
+function start(){
+ active=true;
+ document.getElementById("status").textContent="Bot aktif";
+}
+function stop(){
+ active=false;
+ document.getElementById("status").textContent="Bot durduruldu";
+}
+function scan(){
+ if(!active)return alert("Önce botu başlat.");
+ price*=1+(Math.random()-.45)*.025;
+ let log=document.getElementById("log");
+ let signal=document.getElementById("signal");
+ if(shares===0&&Math.random()>.5){
+ shares=Math.floor(cash*.5/price);
+ entry=price;
+ cash-=shares*price;
+ signal.textContent="AL - PGSUS";
+ log.innerHTML="<p>ALIŞ: "+shares+" lot PGSUS</p>"+log.innerHTML;
+ }else if(shares>0&&(price>=entry*1.04||price<=entry*.98)){
+ cash+=shares*price;
+ log.innerHTML="<p>SATIŞ: "+shares+" lot PGSUS</p>"+log.innerHTML;
+ shares=0;
+ signal.textContent="SAT - PGSUS";
+ }else{
+ signal.textContent="BEKLE - PGSUS";
+ }
+ show();
+}
+</script>
+</body>
+</html>
